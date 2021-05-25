@@ -158,7 +158,11 @@ def showProbeSignals(probes: List[Probe], minYSize: float, maxYSize: float,
 
     # Вывод сигналов в окно
     for probe in probes:
-        ax.plot(t, probe.E)
+        if probe == probes[1]:
+            probes[1].E[100:] = 0
+            ax.plot(t, probe.E)
+        else:
+            ax.plot(t, probe.E)
 
     # Создание и отображение легенды на графике
     legend = ['Probe x = {}'.format(probe.position) for probe in probes]

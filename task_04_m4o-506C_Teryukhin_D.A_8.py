@@ -36,7 +36,7 @@ if __name__ == '__main__':
     c = 3e8
 
     # Время расчета в отсчетах
-    maxTime = 1500
+    maxTime = 1700
 
     #Размер области моделирования в метрах
     X = 2
@@ -83,7 +83,20 @@ if __name__ == '__main__':
     Ez = numpy.zeros(maxSize)
     Hy = numpy.zeros(maxSize - 1)
 
-    source = Gaussian(30.0, 10.0, eps[sourcePos], mu[sourcePos])
+    # Параметры гауссова импульса
+    A0 = 100        # уровень ослабления сигнала в момент времени t=0
+    Amax = 100      # уровень ослабления спектра сигнала на частоте Fmax
+    Fmax = 5e9      # максимальная частота в спектре сигнала
+    
+    wg = numpy.sqrt(numpy.log(Amax)) / (numpy.pi * Fmax)
+    dg = wg * numpy.sqrt(numpy.log(A0))
+
+    wg = wg / dt
+    dg = dg / dt
+
+    dg_add = 20     # дополнительная задержка
+
+    source = Gaussian(dg + dg_add, wg, eps[sourcePos], mu[sourcePos])
 
     # Ez[1] в предыдущий момент времени
     oldEzLeft = Ez[1]
@@ -176,7 +189,7 @@ if __name__ == '__main__':
     # Построение графиков
     plt.figure
     plt.plot(f, fall_spectrum / numpy.max(fall_spectrum))
-    plt.plot(f, scattered_spectrum / numpy.max(scattered_spectrum))
+    plt.plot(f, scattered_spectrum / numpy.max(fall_spectrum))
     plt.grid()
     plt.xlim(0, 6e9)
     plt.xlabel('f, Гц')
